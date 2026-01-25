@@ -1,51 +1,47 @@
 // src/input/useInput.js
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export function useInput() {
   const [input, setInput] = useState({ forward: 0, right: 0, rotY: 0 });
 
-  const updateInput = useCallback(
-    (key, value) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
       setInput((prev) => {
         const copy = { ...prev };
-        switch (key) {
-          case "w":
-            copy.forward = value;
-            break;
-          case "s":
-            copy.forward = -value;
-            break;
-          case "a":
-            copy.right = -value;
-            break;
-          case "d":
-            copy.right = value;
-            break;
-          default:
-            break;
-        }
+        if (e.key === "w") copy.forward = 1;
+        if (e.key === "s") copy.forward = -1;
+        if (e.key === "a") copy.right = -1;
+        if (e.key === "d") copy.right = 1;
+        console.log("Input updated (keydown):", copy);
         return {
           forward: isNaN(copy.forward) ? 0 : copy.forward,
           right: isNaN(copy.right) ? 0 : copy.right,
           rotY: isNaN(copy.rotY) ? 0 : copy.rotY,
         };
       });
-    },
-    [] // Dependency array
-  );
+    };
 
-  useEffect(() => {
-    const handleKeyDown = (e) => updateInput(e.key, 1);
-    const handleKeyUp = (e) => updateInput(e.key, 0);
+    const handleKeyUp = (e) => {
+      setInput((prev) => {
+        const copy = { ...prev };
+        if (e.key === "w" || e.key === "s") copy.forward = 0;
+        if (e.key === "a" || e.key === "d") copy.right = 0;
+        console.log("Input updated (keyup):", copy);
+        return {
+          forward: isNaN(copy.forward) ? 0 : copy.forward,
+          right: isNaN(copy.right) ? 0 : copy.right,
+          rotY: isNaN(copy.rotY) ? 0 : copy.rotY,
+        };
+      });
+    };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [updateInput]);
+  }, []);
 
   return input;
 }

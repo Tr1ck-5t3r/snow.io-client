@@ -16,6 +16,7 @@ export function useNetwork() {
     if (!room) return;
 
     const playersMap = room.state.players;
+    if (!playersMap) return; // Ensure playersMap is defined before accessing onAdd and onRemove
 
     // handle additions
     const onAddDisposer = playersMap.onAdd?.((player, id) => {
@@ -42,7 +43,13 @@ export function useNetwork() {
 
   const sendInput = (dx, dz, rotY) => {
     if (room) {
-      room.send("input", { dx, dz, rotY });
+      // Validate inputs to ensure they are numbers
+      const validDx = isNaN(dx) ? 0 : dx;
+      const validDz = isNaN(dz) ? 0 : dz;
+      const validRotY = isNaN(rotY) ? 0 : rotY;
+
+      console.log("Sending input to server:", { dx: validDx, dz: validDz, rotY: validRotY });
+      room.send("input", { dx: validDx, dz: validDz, rotY: validRotY });
     }
   };
 
