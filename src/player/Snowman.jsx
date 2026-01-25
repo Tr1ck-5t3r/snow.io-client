@@ -1,12 +1,10 @@
 // src/player/Snowman.jsx
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
-export default function Snowman({ position = [0, 0, 0], rotationY = 0 }) {
-  const ref = useRef();
-
+const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, ref) => {
   useFrame(() => {
-    if (ref.current) {
+    if (ref?.current) {
       ref.current.rotation.y = rotationY; // rotate snowman to match input
     }
   });
@@ -44,4 +42,6 @@ export default function Snowman({ position = [0, 0, 0], rotationY = 0 }) {
       </mesh>
     </group>
   );
-}
+});
+
+export default Snowman;

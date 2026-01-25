@@ -13,11 +13,12 @@ export default function Menu({ onStart }) {
       setError(null);
 
       const room = await colyseus.joinOrCreate(ROOM_NAME); // single join-or-create
+      setLoading(false); // Ensure loading is set to false after successful join
       onStart(room);
     } catch (err) {
       console.error(err);
       setError(err.message || "Failed to connect");
-      setLoading(false);
+      setLoading(false); // Ensure loading is set to false on error
     }
   };
 
