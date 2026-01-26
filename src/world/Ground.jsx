@@ -3,7 +3,7 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 export default function Ground() {
-  const groundTexture = useTexture("/textures/ground.jpg");
+  let groundTexture = useTexture("/textures/ground.jpg");
 
   useEffect(() => {
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;

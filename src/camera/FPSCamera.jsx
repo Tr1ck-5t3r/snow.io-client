@@ -3,14 +3,10 @@ import { useRef, useEffect } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import { PointerLockControls } from "@react-three/drei";
 import { Vector3 } from "three";
-import { useNetwork } from "../net/useNetwork";
-import { useInput } from "../input/useInput";
 
-export default function FPSCamera({ snowmanRef, offset = [0, 1.6, 0], speed = 0.1 }) {
+export default function FPSCamera({ snowmanRef, offset = [0, 1.6, 0] }) {
   const { camera } = useThree();
   const controlsRef = useRef();
-  const { forward, right, rotY } = useInput();
-  const { sendInput } = useNetwork();
 
   useFrame(() => {
     if (snowmanRef?.current) {
@@ -24,13 +20,6 @@ export default function FPSCamera({ snowmanRef, offset = [0, 1.6, 0], speed = 0.
 
       const dir = new Vector3();
       camera.getWorldDirection(dir);
-
-      // Calculate movement based on input
-      const dx = right * speed;
-      const dz = forward * speed;
-
-      // Send input to server
-      sendInput(dx, dz, rotY);
     }
   });
 

@@ -1,3 +1,4 @@
+// Moved from net/useNetwork.js
 import { useEffect, useState, useCallback } from "react";
 import { useGame } from "../game/GameContext";
 
@@ -16,7 +17,7 @@ export function useNetwork() {
     if (!room) return;
 
     const playersMap = room.state.players;
-    if (!playersMap) return; // Ensure playersMap is defined before accessing onAdd and onRemove
+    if (!playersMap) return;
 
     // handle additions
     const onAddDisposer = playersMap.onAdd?.((player, id) => {
@@ -41,20 +42,17 @@ export function useNetwork() {
     };
   }, [room, initializePlayers]);
 
-  const sendInput = useCallback(
-    (dx, dz, rotY) => {
-      if (room && (dx !== 0 || dz !== 0 || rotY !== 0)) {
-        // Validate inputs to ensure they are numbers
-        const validDx = isNaN(dx) ? 0 : dx;
-        const validDz = isNaN(dz) ? 0 : dz;
-        const validRotY = isNaN(rotY) ? 0 : rotY;
+  const sendInput = useCallback((dx, dz, rotY) => {
+    if (room && (dx !== 0 || dz !== 0 || rotY !== 0)) {
+      // Validate inputs to ensure they are numbers
+      const validDx = isNaN(dx) ? 0 : dx;
+      const validDz = isNaN(dz) ? 0 : dz;
+      const validRotY = isNaN(rotY) ? 0 : rotY;
 
-        console.log("Sending input to server:", { dx: validDx, dz: validDz, rotY: validRotY });
-        room.send("input", { dx: validDx, dz: validDz, rotY: validRotY });
-      }
-    },
-    [room]
-  );
+      console.log("Sending input to server:", { dx: validDx, dz: validDz, rotY: validRotY });
+      room.send("input", { dx: validDx, dz: validDz, rotY: validRotY });
+    }
+  }, [room]);
 
   return { players, sendInput };
 }

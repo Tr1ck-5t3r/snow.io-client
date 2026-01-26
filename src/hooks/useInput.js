@@ -1,4 +1,4 @@
-// src/input/useInput.js
+// Moved from input/useInput.js
 import { useState, useEffect } from "react";
 
 export function useInput() {
@@ -12,7 +12,6 @@ export function useInput() {
         if (e.key === "s") copy.forward = -1;
         if (e.key === "a") copy.right = -1;
         if (e.key === "d") copy.right = 1;
-        console.log("Input updated (keydown):", copy);
         return {
           forward: isNaN(copy.forward) ? 0 : copy.forward,
           right: isNaN(copy.right) ? 0 : copy.right,
@@ -26,7 +25,6 @@ export function useInput() {
         const copy = { ...prev };
         if (e.key === "w" || e.key === "s") copy.forward = 0;
         if (e.key === "a" || e.key === "d") copy.right = 0;
-        console.log("Input updated (keyup):", copy);
         return {
           forward: isNaN(copy.forward) ? 0 : copy.forward,
           right: isNaN(copy.right) ? 0 : copy.right,

@@ -1,10 +1,11 @@
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { WORLD_WIDTH, WORLD_HEIGHT } from "../config/constants";
 
 export default function Walls() {
-  const wallHeight = 20;
+  const wallHeight = WORLD_HEIGHT / 5; // Example usage of WORLD_HEIGHT
   const wallThickness = 1;
-  const size = 50;
+  const size = WORLD_WIDTH / 2; // Example usage of WORLD_WIDTH
 
   const wallTexture = useTexture("/textures/wall.jpg");
 
