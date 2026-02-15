@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 export function useInput() {
-  const [input, setInput] = useState({ forward: 0, right: 0, rotY: 0 });
+  const [input, setInput] = useState({ forward: 0, right: 0 });
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -15,7 +15,6 @@ export function useInput() {
         return {
           forward: isNaN(copy.forward) ? 0 : copy.forward,
           right: isNaN(copy.right) ? 0 : copy.right,
-          rotY: isNaN(copy.rotY) ? 0 : copy.rotY,
         };
       });
     };
@@ -28,7 +27,6 @@ export function useInput() {
         return {
           forward: isNaN(copy.forward) ? 0 : copy.forward,
           right: isNaN(copy.right) ? 0 : copy.right,
-          rotY: isNaN(copy.rotY) ? 0 : copy.rotY,
         };
       });
     };

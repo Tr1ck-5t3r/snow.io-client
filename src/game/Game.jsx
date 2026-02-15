@@ -7,8 +7,8 @@ export default function Game({ room }) {
     <GameContext.Provider value={{ room }}>
       <Canvas
         shadows
-        camera={{ position: [0, 5, 10], fov: 75 }}
-         style={{ width: "100%", height: "100%", display: "block" }}
+        camera={{ position: [0, 10, 10], fov: 75 }}
+        style={{ width: "100%", height: "100%", display: "block" }}
       >
         <Scene />
       </Canvas>

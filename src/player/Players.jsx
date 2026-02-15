@@ -3,7 +3,7 @@ import Snowman from "./Snowman";
 import { useNetwork } from "../net/useNetwork";
 
 export default function Players() {
-  const players = useNetwork(); // { sessionId: playerState }
+  const { players } = useNetwork(); // destructure the hook result
 
   return (
     <>

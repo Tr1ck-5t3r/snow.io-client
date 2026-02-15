@@ -1,25 +1,26 @@
-import { useEffect } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
 import { useInput } from "../hooks/useInput";
 import { useNetwork } from "../net/useNetwork";
 
-export default function MovementController({ speed = 0.1 }) {
-  const { forward, right, rotY } = useInput();
-  const { sendInput } = useNetwork();
+// this component must live inside the <Canvas> so it has access to the camera
+export default function MovementController() {
+  const { forward, right } = useInput();
+  const { sendInput, predictMovement } = useNetwork();
+  const { camera } = useThree();
 
-  useEffect(() => {
-    const handleMovement = () => {
-      const dx = right * speed;
-      const dz = forward * speed;
+  // every frame we send the current axis values along with the camera yaw
+  // sending zero values ensures the server can clear movement immediately when we stop
+  useFrame(() => {
+    // compute yaw from camera forward vector (pointer lock controls update quaternion, not rotation)
+    const dir = new THREE.Vector3();
+    camera.getWorldDirection(dir);
+    const yaw = Math.atan2(dir.x, -dir.z); // 0 when looking toward -Z
 
-      // Only send input to server if there is movement
-      if (dx !== 0 || dz !== 0 || rotY !== 0) {
-        sendInput(dx, dz, rotY);
-      }
-    };
-
-    const interval = setInterval(handleMovement, 1000 / 60); // 60 FPS
-    return () => clearInterval(interval);
-  }, [forward, right, rotY, sendInput, speed]);
+    const input = { forward, right, rotY: yaw };
+    sendInput(input);
+    predictMovement(input);
+  });
 
   return null; // This component doesn't render anything
 }

@@ -15,46 +15,57 @@ export function useNetwork() {
   useEffect(() => {
     if (!room) return;
 
-    const playersMap = room.state.players;
-    if (!playersMap) return; // Ensure playersMap is defined before accessing onAdd and onRemove
-
-    // handle additions
-    const onAddDisposer = playersMap.onAdd?.((player, id) => {
-      setPlayers((p) => ({ ...p, [id]: player }));
+    // whenever the root state changes, rebuild our simple players object
+    const onStateChange = room.onStateChange((state) => {
+      const playersMap = state.players;
+      if (playersMap) {
+        setPlayers(Object.fromEntries(playersMap.entries()));
+      }
     });
 
-    // handle removals
-    const onRemoveDisposer = playersMap.onRemove?.((player, id) => {
-      setPlayers((p) => {
-        const copy = { ...p };
-        delete copy[id];
-        return copy;
-      });
-    });
-
-    // initialize state
+    // also capture initial state
     initializePlayers();
 
     return () => {
-      onAddDisposer?.();
-      onRemoveDisposer?.();
+      onStateChange();
     };
   }, [room, initializePlayers]);
 
   const sendInput = useCallback(
-    (dx, dz, rotY) => {
-      if (room && (dx !== 0 || dz !== 0 || rotY !== 0)) {
-        // Validate inputs to ensure they are numbers
-        const validDx = isNaN(dx) ? 0 : dx;
-        const validDz = isNaN(dz) ? 0 : dz;
+    ({ forward = 0, right = 0, rotY = 0 }) => {
+      if (room) {
+        const validForward = isNaN(forward) ? 0 : forward;
+        const validRight = isNaN(right) ? 0 : right;
         const validRotY = isNaN(rotY) ? 0 : rotY;
 
-        console.log("Sending input to server:", { dx: validDx, dz: validDz, rotY: validRotY });
-        room.send("input", { dx: validDx, dz: validDz, rotY: validRotY });
+        console.log("Sending input to server:", { forward: validForward, right: validRight, rotY: validRotY });
+        room.send("input", { forward: validForward, right: validRight, rotY: validRotY });
       }
     },
     [room]
   );
 
-  return { players, sendInput };
+  const predictMovement = useCallback(
+    ({ forward = 0, right = 0, rotY = 0 }) => {
+      if (!room) return;
+      setPlayers((p) => {
+        const copy = { ...p };
+        const me = copy[room.sessionId];
+        if (me) {
+          // simple client-side movement matching server logic
+          const speed = 6 * (1 / 60);
+          const sin = Math.sin(rotY);
+          const cos = Math.cos(rotY);
+          const dx = right;
+          const dz = -forward;
+          me.x += (dx * cos - dz * sin) * speed;
+          me.z += (dx * sin + dz * cos) * speed;
+        }
+        return copy;
+      });
+    },
+    [room]
+  );
+
+  return { players, sendInput, predictMovement };
 }

@@ -1,11 +1,18 @@
 // src/player/Snowman.jsx
 import { forwardRef, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Vector3 } from "three";
 
 const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, ref) => {
+  const tempVec = new Vector3();
+
   useFrame(() => {
     if (ref?.current) {
-      ref.current.rotation.y = rotationY; // rotate snowman to match input
+      // smooth rotation
+      ref.current.rotation.y = rotationY;
+      // smooth position towards the target props
+      tempVec.set(position[0], position[1], position[2]);
+      ref.current.position.lerp(tempVec, 0.2);
     }
   });
 
