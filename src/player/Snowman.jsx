@@ -1,6 +1,7 @@
 // src/player/Snowman.jsx
 import { forwardRef, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { SNOWMAN_HEAD_HEIGHT } from "../config/constants";
 
 const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, ref) => {
   useFrame(() => {
@@ -22,21 +23,21 @@ const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, ref) => {
         <meshStandardMaterial color="white" />
       </mesh>
       {/* Head */}
-      <mesh position={[0, 1.6, 0]}>
+      <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0]}>
         <sphereGeometry args={[0.25, 32, 32]} />
         <meshStandardMaterial color="white" />
       </mesh>
       {/* Eyes */}
-      <mesh position={[-0.07, 1.65, 0.22]}>
+      <mesh position={[-0.07, SNOWMAN_HEAD_HEIGHT + 0.05, 0.22]}>
         <sphereGeometry args={[0.03, 16, 16]} />
         <meshStandardMaterial color="black" />
       </mesh>
-      <mesh position={[0.07, 1.65, 0.22]}>
+      <mesh position={[0.07, SNOWMAN_HEAD_HEIGHT + 0.05, 0.22]}>
         <sphereGeometry args={[0.03, 16, 16]} />
         <meshStandardMaterial color="black" />
       </mesh>
       {/* Carrot nose */}
-      <mesh position={[0, 1.6, 0.27]} rotation={[0, 0, Math.PI / 2]}>
+      <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0.27]} rotation={[0, 0, Math.PI / 2]}>
         <coneGeometry args={[0.05, 0.2, 16]} />
         <meshStandardMaterial color="orange" />
       </mesh>

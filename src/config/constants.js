@@ -15,3 +15,7 @@ export const FRICTION = 0.8;
 // Other game parameters
 export const MAX_PLAYERS = 5;
 export const TICK_RATE = 60; // Updates per second
+
+// Snowman parameters
+export const SNOWMAN_HEAD_HEIGHT = 1.6;
+export const SNOWMAN_BASE_Y = 0;

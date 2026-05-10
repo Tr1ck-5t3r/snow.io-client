@@ -8,12 +8,10 @@ export default function MovementController({ speed = 0.1 }) {
 
   useEffect(() => {
     const handleMovement = () => {
-      const dx = right * speed;
-      const dz = forward * speed;
-
-      // Only send input to server if there is movement
-      if (dx !== 0 || dz !== 0 || rotY !== 0) {
-        sendInput(dx, dz, rotY);
+      // Send semantic input values (forward/right) directly
+      // Speed is applied server-side for consistency
+      if (forward !== 0 || right !== 0 || rotY !== 0) {
+        sendInput(forward, right, rotY);
       }
     };
 

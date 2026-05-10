@@ -48,5 +48,16 @@ button {
 
 .menu-error {
   color: #ff1616;
+}
+
+/* Reticle styling */
+.reticle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  pointer-events: none;
+}
   margin-bottom: 20px;
 }
