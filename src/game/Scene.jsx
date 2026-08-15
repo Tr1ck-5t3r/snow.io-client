@@ -1,22 +1,21 @@
 // src/scene/Scene.jsx
-import Snowman from '../player/Snowman';
+import Snowman from '../entities/Snowman';
 import FPSCamera from '../camera/FPSCamera';
 import Walls from '../world/Walls';
 import { useNetwork } from '../net/useNetwork';
 import Ground from '../world/Ground';
 import ShootController from '../input/ShootController';
 import Projectile from '../entities/Projectile';
-import { useGame } from '../game/GameContext';
+import { useGame } from './GameContext';
 import { SNOWMAN_BASE_Y } from '../config/constants';
-import { CameraContext } from '../camera/CameraContext';
-import { useRef } from 'react';
 
 export default function Scene() {
   const { players, projectiles } = useNetwork();
   const { sessionId } = useGame();
 
-  // Create camera context value
-  const cameraContextValue = useRef({ camera: null });
+  // 1. REMOVED: cameraContextValue = useRef({ camera: null });
+  // 2. REMOVED: <CameraContext.Provider> wrapper.
+  // Both have been lifted up to Game.jsx so the Canvas and the MovementController can share it.
 
   // Get player's snowman position for camera following
   const playerData = players[sessionId];
@@ -28,8 +27,8 @@ export default function Scene() {
   }
 
   return (
-    <CameraContext.Provider value={cameraContextValue.current}>
-      {/* FPS Camera - follows player's position */}
+    <>
+      {/* FPS Camera - follows player's position and automatically updates the shared context */}
       <FPSCamera playerPosition={playerPos} />
 
       {/* Shooting controller */}
@@ -67,6 +66,6 @@ export default function Scene() {
           />
         ))
       )}
-    </CameraContext.Provider>
+    </>
   );
 }

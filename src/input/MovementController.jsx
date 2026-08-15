@@ -1,23 +1,38 @@
-import { useEffect } from "react";
+// src/input/MovementController.jsx
+import { useEffect, useContext } from "react";
 import { useInput } from "../hooks/useInput";
 import { useNetwork } from "../net/useNetwork";
+import { CameraContext } from "../camera/CameraContext";
 
-export default function MovementController({ speed = 0.1 }) {
-  const { forward, right, rotY } = useInput();
+export default function MovementController() {
+  const { forward, right } = useInput();
   const { sendInput } = useNetwork();
+  const cameraRef = useContext(CameraContext);
 
   useEffect(() => {
     const handleMovement = () => {
-      // Send semantic input values (forward/right) directly
-      // Speed is applied server-side for consistency
-      if (forward !== 0 || right !== 0 || rotY !== 0) {
+      let rotY = 0;
+
+      // Extract the current orientation from the ThreeJS camera if available
+      if (cameraRef && cameraRef.camera) {
+        rotY = cameraRef.camera.rotation.y; 
+      }
+
+      // Send the movement packet if there is intentional input or looking around
+      // Even if the player isn't moving, the server needs their current rotation 
+      // to render their facing direction to other players.
+      if (forward !== 0 || right !== 0 || cameraRef?.camera) {
+        // forward: 1 / 0 / -1
+        // right: 1 / 0 / -1
+        // rotY: Radians describing where the camera faces
         sendInput(forward, right, rotY);
       }
     };
 
-    const interval = setInterval(handleMovement, 1000 / 60); // 60 FPS
+    // 60Hz tick matching server expectations
+    const interval = setInterval(handleMovement, 1000 / 60);
     return () => clearInterval(interval);
-  }, [forward, right, rotY, sendInput, speed]);
+  }, [forward, right, sendInput, cameraRef]);
 
-  return null; // This component doesn't render anything
+  return null;
 }

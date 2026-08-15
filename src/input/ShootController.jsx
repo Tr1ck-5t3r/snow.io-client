@@ -8,7 +8,6 @@ import { Vector2, Raycaster } from 'three';
 
 const SNOWBALL_SPEED = 50;
 const SNOWBALL_SPAWN_OFFSET = 0.5;
-
 export default function ShootController() {
   const { mouseClick } = useInput();
   const { room } = useContext(GameContext);

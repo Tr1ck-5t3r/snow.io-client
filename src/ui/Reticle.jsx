@@ -9,9 +9,9 @@ export default function Reticle() {
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* Horizontal line */}
-      <line x1="30" y1="50" x2="70" y2="50" stroke="black" strokeWidth="2" />
+      <line x1="30" y1="50" x2="70" y2="50" stroke="black" strokeWidth="5" />
       {/* Vertical line */}
-      <line x1="50" y1="30" x2="50" y2="70" stroke="black" strokeWidth="2" />
+      <line x1="50" y1="30" x2="50" y2="70" stroke="black" strokeWidth="5" />
       {/* Center dot */}
       <circle cx="50" cy="50" r="3" fill="black" />
     </svg>
