@@ -5,7 +5,7 @@ export const WORLD_WIDTH = 100;
 export const WORLD_HEIGHT = 100;
 
 // Player parameters
-export const PLAYER_SPEED = 5;
+export const PLAYER_SPEED = 10;
 export const PLAYER_JUMP_HEIGHT = 10;
 
 // Physics parameters

@@ -1,38 +1,82 @@
 // src/input/MovementController.jsx
-import { useEffect, useContext } from "react";
-import { useInput } from "../hooks/useInput";
+import { useEffect, useContext, useRef } from "react";
+import { Vector3 } from "three";
 import { useNetwork } from "../net/useNetwork";
 import { CameraContext } from "../camera/CameraContext";
 
 export default function MovementController() {
-  const { forward, right } = useInput();
   const { sendInput } = useNetwork();
   const cameraRef = useContext(CameraContext);
+  const inputRef = useRef({ forward: 0, right: 0 });
+  const dirVec = useRef(new Vector3());
+
+  const emitMovement = () => {
+    let rotY = 0;
+    if (cameraRef?.camera) {
+      cameraRef.camera.getWorldDirection(dirVec.current);
+      const len = Math.hypot(dirVec.current.x, dirVec.current.z);
+      if (len > 0.0001) {
+        rotY = Math.atan2(dirVec.current.x, dirVec.current.z);
+      }
+    }
+    const current = inputRef.current;
+
+    if (current.forward !== 0 || current.right !== 0 || cameraRef?.camera) {
+      sendInput(current.forward, current.right, rotY);
+    }
+  };
 
   useEffect(() => {
-    const handleMovement = () => {
-      let rotY = 0;
+    const handleKeyDown = (event) => {
+      const key = event.key.toLowerCase();
 
-      // Extract the current orientation from the ThreeJS camera if available
-      if (cameraRef && cameraRef.camera) {
-        rotY = cameraRef.camera.rotation.y; 
-      }
+      if (key === "w") inputRef.current.forward = 1;
+      else if (key === "s") inputRef.current.forward = -1;
+      else if (key === "a") inputRef.current.right = -1;
+      else if (key === "d") inputRef.current.right = 1;
+      else return;
 
-      // Send the movement packet if there is intentional input or looking around
-      // Even if the player isn't moving, the server needs their current rotation 
-      // to render their facing direction to other players.
-      if (forward !== 0 || right !== 0 || cameraRef?.camera) {
-        // forward: 1 / 0 / -1
-        // right: 1 / 0 / -1
-        // rotY: Radians describing where the camera faces
-        sendInput(forward, right, rotY);
-      }
+      emitMovement();
     };
 
-    // 60Hz tick matching server expectations
-    const interval = setInterval(handleMovement, 1000 / 60);
-    return () => clearInterval(interval);
-  }, [forward, right, sendInput, cameraRef]);
+    const handleKeyUp = (event) => {
+      const key = event.key.toLowerCase();
+
+      if (key === "w" && inputRef.current.forward === 1) {
+        inputRef.current.forward = 0;
+      } else if (key === "s" && inputRef.current.forward === -1) {
+        inputRef.current.forward = 0;
+      } else if (key === "a" && inputRef.current.right === -1) {
+        inputRef.current.right = 0;
+      } else if (key === "d" && inputRef.current.right === 1) {
+        inputRef.current.right = 0;
+      } else {
+        return;
+      }
+
+      emitMovement();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [cameraRef, sendInput]);
+
+  useEffect(() => {
+    let rafId;
+
+    const tick = () => {
+      emitMovement();
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [cameraRef, sendInput]);
 
   return null;
 }

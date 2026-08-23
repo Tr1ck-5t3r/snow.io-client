@@ -25,15 +25,34 @@ export function useNetwork() {
   useEffect(() => {
     if (!room) return;
 
-    const playersMap = room.state.players;
-    if (!playersMap) return; // Ensure playersMap is defined before accessing onAdd and onRemove
+    // room.onStateChange in Colyseus returns a disposer function directly or can be cleared with .once/.off
+    const listener = (state) => {
+      if (state.players) {
+        setPlayers(Object.fromEntries(state.players.entries()));
+      }
+    };
 
-    // handle additions
+    const unsubscribe = room.onStateChange(listener);
+
+    return () => {
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      } else if (room.onStateChange && typeof room.onStateChange.remove === "function") {
+        room.onStateChange.remove(listener);
+      }
+    };
+  }, [room]);
+
+  useEffect(() => {
+    if (!room) return;
+
+    const playersMap = room.state.players;
+    if (!playersMap) return;
+
     const onAddDisposer = playersMap.onAdd?.((player, id) => {
       setPlayers((p) => ({ ...p, [id]: player }));
     });
 
-    // handle removals
     const onRemoveDisposer = playersMap.onRemove?.((player, id) => {
       setPlayers((p) => {
         const copy = { ...p };
@@ -42,7 +61,6 @@ export function useNetwork() {
       });
     });
 
-    // initialize state
     initializePlayers();
 
     return () => {
@@ -83,13 +101,11 @@ export function useNetwork() {
 
   const sendInput = useCallback(
     (forward, right, rotY) => {
-      if (room && (forward !== 0 || right !== 0 || rotY !== 0)) {
-        // Validate inputs to ensure they are numbers
+      if (room) {
         const validForward = isNaN(forward) ? 0 : forward;
         const validRight = isNaN(right) ? 0 : right;
         const validRotY = isNaN(rotY) ? 0 : rotY;
 
-        console.log("Sending input to server:", { forward: validForward, right: validRight, rotY: validRotY });
         room.send("input", { forward: validForward, right: validRight, rotY: validRotY });
       }
     },
