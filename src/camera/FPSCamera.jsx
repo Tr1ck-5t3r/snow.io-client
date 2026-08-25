@@ -10,15 +10,17 @@ export default function FPSCamera({ playerPosition = [0, 0, 0], offset = [0, SNO
   const { camera } = useThree();
   const controlsRef = useRef();
   const cameraContextValue = useContext(CameraContext);
+  const targetPosition = useRef(new Vector3());
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (playerPosition) {
-      const headPosition = new Vector3(
+      targetPosition.current.set(
         playerPosition[0] + offset[0],
         playerPosition[1] + offset[1],
         playerPosition[2] + offset[2]
       );
-      camera.position.lerp(headPosition, 0.1);
+      const smoothing = 1 - Math.exp(-18 * delta);
+      camera.position.lerp(targetPosition.current, smoothing);
 
       const dir = new Vector3();
       camera.getWorldDirection(dir);
