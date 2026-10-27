@@ -5,7 +5,7 @@ import { useNetwork } from "../net/useNetwork";
 import { CameraContext } from "../camera/CameraContext";
 
 export default function MovementController() {
-  const { sendInput } = useNetwork();
+  const { sendInput, sendJump } = useNetwork();
   const cameraRef = useContext(CameraContext);
   const inputRef = useRef({ forward: 0, right: 0 });
   const dirVec = useRef(new Vector3());
@@ -28,6 +28,12 @@ export default function MovementController() {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (!event.repeat) sendJump();
+        return;
+      }
+
       const key = event.key.toLowerCase();
 
       if (key === "w") inputRef.current.forward = 1;
@@ -64,7 +70,7 @@ export default function MovementController() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [cameraRef, sendInput]);
+  }, [cameraRef, sendInput, sendJump]);
 
   useEffect(() => {
     let rafId;

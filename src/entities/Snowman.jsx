@@ -3,7 +3,7 @@ import { forwardRef, useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { SNOWMAN_HEAD_HEIGHT } from "../config/constants";
 
-const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, forwardedRef) => {
+const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0, accentColor = '#54c7ec' }, forwardedRef) => {
   const groupRef = useRef();
   const targetPosition = useRef(position);
   const initialized = useRef(false);
@@ -38,31 +38,35 @@ const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0 }, forwardedRe
     <group ref={groupRef}>
       {/* Bottom snowball */}
       <mesh position={[0, 0.5, 0]}>
-        <sphereGeometry args={[0.5, 32, 32]} />
+        <sphereGeometry args={[0.5, 20, 14]} />
         <meshStandardMaterial color="white" />
       </mesh>
       {/* Middle snowball */}
       <mesh position={[0, 1.1, 0]}>
-        <sphereGeometry args={[0.35, 32, 32]} />
+        <sphereGeometry args={[0.35, 16, 12]} />
         <meshStandardMaterial color="white" />
       </mesh>
       {/* Head */}
       <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0]}>
-        <sphereGeometry args={[0.25, 32, 32]} />
+        <sphereGeometry args={[0.25, 16, 12]} />
         <meshStandardMaterial color="white" />
+      </mesh>
+      <mesh position={[0, 0.91, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.31, 0.07, 6, 20]} />
+        <meshStandardMaterial color={accentColor} roughness={0.7} />
       </mesh>
       {/* Eyes */}
       <mesh position={[-0.07, SNOWMAN_HEAD_HEIGHT + 0.05, 0.22]}>
-        <sphereGeometry args={[0.03, 16, 16]} />
+        <sphereGeometry args={[0.03, 8, 6]} />
         <meshStandardMaterial color="black" />
       </mesh>
       <mesh position={[0.07, SNOWMAN_HEAD_HEIGHT + 0.05, 0.22]}>
-        <sphereGeometry args={[0.03, 16, 16]} />
+        <sphereGeometry args={[0.03, 8, 6]} />
         <meshStandardMaterial color="black" />
       </mesh>
       {/* Carrot nose */}
       <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0.27]} rotation={[0, 0, Math.PI / 2]}>
-        <coneGeometry args={[0.05, 0.2, 16]} />
+        <coneGeometry args={[0.05, 0.2, 8]} />
         <meshStandardMaterial color="orange" />
       </mesh>
     </group>

@@ -2,11 +2,12 @@
 
 // World dimensions
 export const WORLD_WIDTH = 100;
-export const WORLD_HEIGHT = 100;
+export const WORLD_DEPTH = 100;
+export const WALL_HEIGHT = 15;
 
 // Player parameters
 export const PLAYER_SPEED = 10;
-export const PLAYER_JUMP_HEIGHT = 10;
+export const PLAYER_JUMP_HEIGHT = 2;
 
 // Physics parameters
 export const GRAVITY = 9.8;

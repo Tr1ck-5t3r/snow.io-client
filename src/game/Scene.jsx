@@ -9,6 +9,16 @@ import Projectile from '../entities/Projectile';
 import { useGame } from './GameContext';
 import { SNOWMAN_BASE_Y } from '../config/constants';
 
+const PLAYER_COLORS = ['#54c7ec', '#ff9f43', '#a66cff', '#ff6384', '#6bd18b'];
+
+function colorForPlayer(sessionId) {
+  let hash = 0;
+  for (let i = 0; i < sessionId.length; i += 1) {
+    hash = (hash * 31 + sessionId.charCodeAt(i)) | 0;
+  }
+  return PLAYER_COLORS[(hash >>> 0) % PLAYER_COLORS.length];
+}
+
 export default function Scene() {
   const { players, projectiles } = useNetwork();
   const { sessionId } = useGame();
@@ -19,12 +29,7 @@ export default function Scene() {
 
   // Get player's snowman position for camera following
   const playerData = players[sessionId];
-  const playerPos = playerData ? [playerData.x, SNOWMAN_BASE_Y, playerData.z] : [0, 0, 0];
-
-  // Debug logging
-  if (Object.keys(projectiles).length > 0) {
-    console.log('Projectiles in scene:', Object.keys(projectiles).length, projectiles);
-  }
+  const playerPos = playerData ? [playerData.x, playerData.y ?? SNOWMAN_BASE_Y, playerData.z] : [0, 0, 0];
 
   return (
     <>
@@ -47,25 +52,22 @@ export default function Scene() {
         return (
           <Snowman
             key={id}
-            position={[player.x, SNOWMAN_BASE_Y, player.z]}
+            position={[player.x, player.y ?? SNOWMAN_BASE_Y, player.z]}
             rotationY={player.rotationY}
+            accentColor={colorForPlayer(id)}
           />
         );
       })}
 
       {/* Projectiles */}
-      {Object.entries(projectiles).length === 0 ? (
-        <></>
-      ) : (
-        Object.entries(projectiles).map(([id, projectile]) => (
-          <Projectile
-            key={id}
-            id={id}
-            initialPosition={[projectile.x, projectile.y, projectile.z]}
-            velocity={[projectile.vx, projectile.vy, projectile.vz]}
-          />
-        ))
-      )}
+      {Object.entries(projectiles).map(([id, projectile]) => (
+        <Projectile
+          key={id}
+          id={id}
+          position={[projectile.x, projectile.y, projectile.z]}
+          velocity={[projectile.vx, projectile.vy, projectile.vz]}
+        />
+      ))}
     </>
   );
 }

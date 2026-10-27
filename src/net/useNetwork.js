@@ -17,7 +17,6 @@ export function useNetwork() {
     if (room && room.state.projectiles) {
       const projectilesMap = room.state.projectiles;
       const projectilesObj = Object.fromEntries(projectilesMap.entries());
-      console.log('Initialized projectiles:', projectilesObj);
       setProjectiles(projectilesObj);
     }
   }, [room]);
@@ -53,6 +52,10 @@ export function useNetwork() {
       setPlayers((p) => ({ ...p, [id]: player }));
     });
 
+    const onChangeDisposer = playersMap.onChange?.((player, id) => {
+      setPlayers((p) => ({ ...p, [id]: player }));
+    });
+
     const onRemoveDisposer = playersMap.onRemove?.((player, id) => {
       setPlayers((p) => {
         const copy = { ...p };
@@ -65,6 +68,7 @@ export function useNetwork() {
 
     return () => {
       onAddDisposer?.();
+      onChangeDisposer?.();
       onRemoveDisposer?.();
     };
   }, [room, initializePlayers]);
@@ -74,15 +78,15 @@ export function useNetwork() {
 
     const projectilesMap = room.state.projectiles;
 
-    // handle projectile additions
     const onAddDisposer = projectilesMap.onAdd?.((projectile, id) => {
-      console.log('Projectile added:', id, projectile);
       setProjectiles((p) => ({ ...p, [id]: projectile }));
     });
 
-    // handle projectile removals
+    const onChangeDisposer = projectilesMap.onChange?.((projectile, id) => {
+      setProjectiles((p) => ({ ...p, [id]: projectile }));
+    });
+
     const onRemoveDisposer = projectilesMap.onRemove?.((projectile, id) => {
-      console.log('Projectile removed:', id);
       setProjectiles((p) => {
         const copy = { ...p };
         delete copy[id];
@@ -90,11 +94,11 @@ export function useNetwork() {
       });
     });
 
-    // initialize projectiles
     initializeProjectiles();
 
     return () => {
       onAddDisposer?.();
+      onChangeDisposer?.();
       onRemoveDisposer?.();
     };
   }, [room, initializeProjectiles]);
@@ -112,5 +116,9 @@ export function useNetwork() {
     [room]
   );
 
-  return { players, projectiles, sendInput };
+  const sendJump = useCallback(() => {
+    room?.send("jump");
+  }, [room]);
+
+  return { players, projectiles, sendInput, sendJump };
 }
