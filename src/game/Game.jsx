@@ -5,6 +5,7 @@ import { GameContext } from './GameContext';
 import Scene from './Scene';
 import Reticle from '../ui/Reticle';
 import FPSCounter from '../ui/FPSCounter';
+import HealthHUD from '../ui/HealthHUD';
 import MovementController from '../input/MovementController';
 import { InputContext } from '../hooks/InputContext';
 import { useInputProvider } from '../hooks/useInput';
@@ -24,6 +25,7 @@ export default function Game({ room }) {
           <div ref={gameDivRef} tabIndex={0} style={{ position: 'relative', width: '100%', height: '100%', outline: 'none' }}>
             <FPSCounter />
             <Reticle />
+            <HealthHUD />
             <MovementController />
             <Canvas
               camera={{ position: [0, 5, 10], fov: 75 }}

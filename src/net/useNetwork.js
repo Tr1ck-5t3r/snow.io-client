@@ -14,14 +14,6 @@ export function useNetwork() {
     }
   }, [room]);
 
-  const initializeProjectiles = useCallback(() => {
-    if (room && room.state.projectiles) {
-      const projectilesMap = room.state.projectiles;
-      const projectilesObj = Object.fromEntries(projectilesMap.entries());
-      setProjectiles(projectilesObj);
-    }
-  }, [room]);
-
   useEffect(() => {
     if (!room) return;
 
@@ -78,12 +70,19 @@ export function useNetwork() {
     if (!room || !room.state.projectiles) return;
 
     const projectilesMap = room.state.projectiles;
+    // Effects already in the room when this client joins are history, not new
+    // shots for this session. Track their IDs so initialization callbacks and
+    // later patches cannot resurrect them in the joining client's view.
+    const existingProjectileIds = new Set(projectilesMap.keys());
+    setProjectiles({});
 
     const onAddDisposer = projectilesMap.onAdd?.((projectile, id) => {
+      if (existingProjectileIds.has(id)) return;
       setProjectiles((p) => ({ ...p, [id]: projectile }));
-    });
+    }, false);
 
     const onChangeDisposer = projectilesMap.onChange?.((projectile, id) => {
+      if (existingProjectileIds.has(id)) return;
       setProjectiles((p) => ({ ...p, [id]: projectile }));
     });
 
@@ -95,21 +94,22 @@ export function useNetwork() {
       });
     });
 
-    initializeProjectiles();
-
     return () => {
       onAddDisposer?.();
       onChangeDisposer?.();
       onRemoveDisposer?.();
     };
-  }, [room, initializeProjectiles]);
+  }, [room]);
 
   useEffect(() => {
     if (!room || !room.state.decals) return;
     const decalsMap = room.state.decals;
+    const existingDecalIds = new Set(decalsMap.keys());
+    setDecals({});
     const onAddDisposer = decalsMap.onAdd?.((decal, id) => {
+      if (existingDecalIds.has(id)) return;
       setDecals((current) => ({ ...current, [id]: decal }));
-    });
+    }, false);
     const onRemoveDisposer = decalsMap.onRemove?.((decal, id) => {
       setDecals((current) => {
         const copy = { ...current };
@@ -117,7 +117,6 @@ export function useNetwork() {
         return copy;
       });
     });
-    setDecals(Object.fromEntries(decalsMap.entries()));
     return () => {
       onAddDisposer?.();
       onRemoveDisposer?.();

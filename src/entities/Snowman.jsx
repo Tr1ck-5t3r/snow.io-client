@@ -1,16 +1,36 @@
 // src/player/Snowman.jsx
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { SNOWMAN_HEAD_HEIGHT } from "../config/constants";
+import { Html } from "@react-three/drei";
+import { SNOWMAN_HEAD_HEIGHT, SNOWMAN_SCALE } from "../config/constants";
+import DeathSplash from "./DeathSplash";
 
-const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0, accentColor = '#54c7ec' }, forwardedRef) => {
+const Snowman = forwardRef(({
+  position = [0, 0, 0],
+  rotationY = 0,
+  accentColor = '#54c7ec',
+  health = 50,
+  maxHealth = 50,
+}, forwardedRef) => {
   const groupRef = useRef();
   const targetPosition = useRef(position);
   const initialized = useRef(false);
+  const previousHealth = useRef(health);
+  const [deathSplashKey, setDeathSplashKey] = useState(0);
 
   useEffect(() => {
     targetPosition.current = position;
   }, [position]);
+
+  useEffect(() => {
+    if (previousHealth.current > 0 && health <= 0) {
+      setDeathSplashKey((key) => key + 1);
+    }
+    if (previousHealth.current <= 0 && health > 0 && groupRef.current) {
+      groupRef.current.position.set(...position);
+    }
+    previousHealth.current = health;
+  }, [health, position]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -20,7 +40,7 @@ const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0, accentColor =
       initialized.current = true;
     }
 
-    const smoothing = 1 - Math.exp(-12 * delta);
+    const smoothing = 1 - Math.exp(-30 * delta);
     groupRef.current.position.x +=
       (targetPosition.current[0] - groupRef.current.position.x) * smoothing;
     groupRef.current.position.y +=
@@ -35,7 +55,28 @@ const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0, accentColor =
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={SNOWMAN_SCALE}>
+      {health <= 0 ? (deathSplashKey > 0 && <DeathSplash key={deathSplashKey} />) : <>
+      <Html position={[0, 2.15, 0]} center distanceFactor={12} zIndexRange={[20, 0]}>
+        <div style={{
+          width: 68,
+          height: 8,
+          padding: 2,
+          borderRadius: 6,
+          background: 'rgba(10, 20, 30, 0.78)',
+          border: '1px solid rgba(225, 240, 255, 0.75)',
+          boxSizing: 'content-box',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            width: `${Math.max(0, Math.min(100, (health / Math.max(1, maxHealth)) * 100))}%`,
+            height: '100%',
+            borderRadius: 4,
+            background: health > maxHealth / 2 ? '#70e29a' : health > 0 ? '#ffd166' : '#ef5350',
+            transition: 'width 160ms ease-out',
+          }} />
+        </div>
+      </Html>
       {/* Bottom snowball */}
       <mesh position={[0, 0.5, 0]}>
         <sphereGeometry args={[0.5, 20, 14]} />
@@ -65,10 +106,11 @@ const Snowman = forwardRef(({ position = [0, 0, 0], rotationY = 0, accentColor =
         <meshStandardMaterial color="black" />
       </mesh>
       {/* Carrot nose */}
-      <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0.27]} rotation={[0, 0, Math.PI / 2]}>
-        <coneGeometry args={[0.05, 0.2, 8]} />
+      <mesh position={[0, SNOWMAN_HEAD_HEIGHT, 0.24]} rotation={[Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.055, 0.22, 8]} />
         <meshStandardMaterial color="orange" />
       </mesh>
+      </>}
     </group>
   );
 });

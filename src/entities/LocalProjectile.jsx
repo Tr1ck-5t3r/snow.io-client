@@ -1,11 +1,22 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Vector3 } from 'three';
-import { GRAVITY, WALL_HEIGHT } from '../config/constants';
+import { GRAVITY, SNOWMAN_SCALE, WALL_HEIGHT } from '../config/constants';
 import { PROJECTILE_RADIUS } from './Projectile';
 
 const IMPACT_HOLD_SECONDS = 0.3;
-const COLLISION_RADIUS = 1.5;
+const SNOWMAN_HIT_RADIUS = 0.5 * SNOWMAN_SCALE + PROJECTILE_RADIUS;
+
+function hitsSnowman(position, player) {
+  const nearestBodyY = Math.max(
+    player.y + 0.5 * SNOWMAN_SCALE,
+    Math.min(player.y + 1.6 * SNOWMAN_SCALE, position.y),
+  );
+  const dx = position.x - player.x;
+  const dy = position.y - nearestBodyY;
+  const dz = position.z - player.z;
+  return dx * dx + dy * dy + dz * dz <= SNOWMAN_HIT_RADIUS * SNOWMAN_HIT_RADIUS;
+}
 
 export default function LocalProjectile({ shot, players, sessionId, onFinished }) {
   const meshRef = useRef();
@@ -30,13 +41,8 @@ export default function LocalProjectile({ shot, players, sessionId, onFinished }
 
       if (!hit) {
         for (const [playerId, player] of Object.entries(players)) {
-          if (playerId === sessionId) continue;
-          const distance = Math.hypot(
-            position.current.x - player.x,
-            position.current.y - player.y,
-            position.current.z - player.z,
-          );
-          if (distance < COLLISION_RADIUS) {
+          if (playerId === sessionId || player.health <= 0) continue;
+          if (hitsSnowman(position.current, player)) {
             hit = true;
             break;
           }

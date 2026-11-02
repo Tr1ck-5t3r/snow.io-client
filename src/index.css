@@ -13,3 +13,23 @@ main {
   width: 100vw;
   overflow: hidden;
 }
+
+.death-snow-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(210, 241, 255, 0.05) 12%,
+    rgba(205, 235, 255, 0.32) 58%,
+    rgba(239, 250, 255, 0.82) 100%
+  );
+  animation: death-snow-flash 900ms ease-out both;
+}
+
+@keyframes death-snow-flash {
+  0% { opacity: 0; transform: scale(0.92); }
+  18% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.04); }
+}

@@ -19,4 +19,5 @@ export const TICK_RATE = 60; // Updates per second
 
 // Snowman parameters
 export const SNOWMAN_HEAD_HEIGHT = 1.6;
+export const SNOWMAN_SCALE = 1.2;
 export const SNOWMAN_BASE_Y = 0;

@@ -58,6 +58,8 @@ export default function Scene() {
             position={[player.x, player.y ?? SNOWMAN_BASE_Y, player.z]}
             rotationY={player.rotationY}
             accentColor={colorForPlayer(id)}
+          health={player.health}
+          maxHealth={player.maxHealth}
           />
         );
       })}

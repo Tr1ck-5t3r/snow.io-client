@@ -7,10 +7,10 @@ import { useNetwork } from '../net/useNetwork';
 import LocalProjectile from '../entities/LocalProjectile';
 import { Vector2, Raycaster, Vector3 } from 'three';
 
-const SNOWBALL_SPEED = 50;
+const SNOWBALL_SPEED = 25;
 // Keep the camera outside the snowball so its near surface doesn't fill the view.
 const SNOWBALL_SPAWN_OFFSET = 1.3;
-const SHOT_COOLDOWN_MS = 250;
+const SHOT_COOLDOWN_MS = 150;
 
 export default function ShootController() {
   const { shootCount } = useInput();

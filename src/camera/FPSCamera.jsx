@@ -4,9 +4,9 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import { Vector3 } from 'three';
 import { CameraContext } from './CameraContext';
-import { SNOWMAN_HEAD_HEIGHT } from '../config/constants';
+import { SNOWMAN_HEAD_HEIGHT, SNOWMAN_SCALE } from '../config/constants';
 
-export default function FPSCamera({ playerPosition = [0, 0, 0], offset = [0, SNOWMAN_HEAD_HEIGHT, 0] }) {
+export default function FPSCamera({ playerPosition = [0, 0, 0], offset = [0, SNOWMAN_HEAD_HEIGHT * SNOWMAN_SCALE, 0] }) {
   const { camera } = useThree();
   const controlsRef = useRef();
   const cameraContextValue = useContext(CameraContext);
@@ -19,8 +19,13 @@ export default function FPSCamera({ playerPosition = [0, 0, 0], offset = [0, SNO
         playerPosition[1] + offset[1],
         playerPosition[2] + offset[2]
       );
-      const smoothing = 1 - Math.exp(-18 * delta);
-      camera.position.lerp(targetPosition.current, smoothing);
+      if (camera.position.distanceToSquared(targetPosition.current) > 25) {
+        // Respawns and joins are teleports, not movement to interpolate.
+        camera.position.copy(targetPosition.current);
+      } else {
+        const smoothing = 1 - Math.exp(-40 * delta);
+        camera.position.lerp(targetPosition.current, smoothing);
+      }
 
       const dir = new Vector3();
       camera.getWorldDirection(dir);

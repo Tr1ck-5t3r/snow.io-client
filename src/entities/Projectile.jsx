@@ -2,7 +2,7 @@
 import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 
-export const PROJECTILE_RADIUS = 0.35;
+export const PROJECTILE_RADIUS = 0.22;
 
 export default function Projectile({
  position = [0, 0, 0],
