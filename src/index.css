@@ -14,6 +14,23 @@ main {
   overflow: hidden;
 }
 
+.laptop-required {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #eaf5ff;
+  color: #17324d;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+}
+
+.laptop-required p {
+  max-width: 28rem;
+  font-size: clamp(1.5rem, 6vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .death-snow-flash {
   position: fixed;
   inset: 0;
