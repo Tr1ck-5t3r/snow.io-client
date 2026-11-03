@@ -14,12 +14,76 @@
   margin-top: 20px;
 }
 
-.menu-buttons {
+.menu-panel {
   margin-top: auto;
-  margin-bottom: 80px;
+  margin-bottom: 36px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
+}
+
+.name-label {
+  width: 260px;
+  color: #c0d9e8;
+  font: 600 12px/1.2 system-ui, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.name-input {
+  width: 260px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #526875;
+  border-radius: 4px;
+  outline: none;
+  background: #18252c;
+  color: #f3f8fb;
+  font: 16px system-ui, sans-serif;
+}
+
+.name-input:focus {
+  border-color: #8ddcff;
+  box-shadow: 0 0 0 2px rgba(141, 220, 255, 0.18);
+}
+
+.controls-card {
+  width: 260px;
+  padding: 12px 14px;
+  border: 1px solid #34444d;
+  border-radius: 4px;
+  background: #151e23;
+  color: #dce9ef;
+  font: 13px/1.5 system-ui, sans-serif;
+}
+
+.controls-card h2 {
+  margin-bottom: 8px;
+  color: #93cde5;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.controls-card p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.controls-card p span {
+  margin-left: auto;
+}
+
+.controls-card kbd {
+  min-width: 26px;
+  padding: 2px 5px;
+  border: 1px solid #53646e;
+  border-radius: 3px;
+  background: #26343c;
+  color: #fff;
+  text-align: center;
+  font: 600 11px system-ui, sans-serif;
 }
 
 button {

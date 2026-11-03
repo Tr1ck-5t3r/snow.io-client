@@ -6,13 +6,16 @@ import { ROOM_NAME } from "../config/network";
 export default function Menu({ onStart }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [name, setName] = useState(() => window.localStorage.getItem("snowman-name") || "");
 
   const play = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const room = await colyseus.joinOrCreate(ROOM_NAME); // single join-or-create
+      const playerName = name.trim().slice(0, 20) || "Snowman";
+      window.localStorage.setItem("snowman-name", playerName);
+      const room = await colyseus.joinOrCreate(ROOM_NAME, { name: playerName });
       setLoading(false); // Ensure loading is set to false after successful join
       onStart(room);
     } catch (err) {
@@ -22,5 +25,11 @@ export default function Menu({ onStart }) {
     }
   };
 
-  return <MenuOverlay onPlay={play} loading={loading} error={error} />;
+  return <MenuOverlay
+    onPlay={play}
+    loading={loading}
+    error={error}
+    name={name}
+    onNameChange={setName}
+  />;
 }
