@@ -11,6 +11,7 @@ const Snowman = forwardRef(({
   accentColor = '#54c7ec',
   health = 50,
   maxHealth = 50,
+  name = "Snowman",
 }, forwardedRef) => {
   const groupRef = useRef();
   const targetPosition = useRef(position);
@@ -57,7 +58,15 @@ const Snowman = forwardRef(({
   return (
     <group ref={groupRef} scale={SNOWMAN_SCALE}>
       {health <= 0 ? (deathSplashKey > 0 && <DeathSplash key={deathSplashKey} />) : <>
-      <Html position={[0, 2.15, 0]} center distanceFactor={12} zIndexRange={[20, 0]}>
+      <Html position={[0, 2.45, 0]} center distanceFactor={12} zIndexRange={[20, 0]}>
+        <div style={{
+          marginBottom: 4,
+          color: '#fff',
+          font: '600 12px/1.2 system-ui, sans-serif',
+          textShadow: '0 1px 3px #000, 0 0 5px #000',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+        }}>{name}</div>
         <div style={{
           width: 68,
           height: 8,
